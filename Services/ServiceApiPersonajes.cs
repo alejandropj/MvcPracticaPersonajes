@@ -1,5 +1,7 @@
 ﻿using MvcPracticaPersonajes.Models;
+using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace MvcPracticaPersonajes.Services
 {
@@ -66,6 +68,58 @@ namespace MvcPracticaPersonajes.Services
             List<PersonajesSeries> data = await this.CallApiAsync
                 <List<PersonajesSeries>>(request);
             return data;
+        }
+
+        public async Task CreatePersonajeSerieAsync
+            (int id, string nombre, string imagen, string serie)
+        {
+            string request = "api/personajes/insertpersonaje";
+            using(HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(this.UrlApi);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(this.header);
+                PersonajesSeries personajesSeries = new PersonajesSeries();
+                personajesSeries.IdPersonaje = id;
+                personajesSeries.Nombre = nombre;
+                personajesSeries.Imagen = imagen;
+                personajesSeries.Serie = serie;
+                string json = JsonConvert.SerializeObject(personajesSeries);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(request, content);
+            }
+        }        
+        public async Task UpdatePersonajeSerieAsync
+            (int id, string nombre, string imagen, string serie)
+        {
+            string request = "api/personajes/updatepersonaje";
+            using(HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(this.UrlApi);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(this.header);
+                PersonajesSeries personajesSeries = new PersonajesSeries();
+                personajesSeries.IdPersonaje = id;
+                personajesSeries.Nombre = nombre;
+                personajesSeries.Imagen = imagen;
+                personajesSeries.Serie = serie;
+                string json = JsonConvert.SerializeObject(personajesSeries);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PutAsync(request, content);
+            }
+        }        
+        public async Task DeletePersonajeSerieAsync
+            (int id)
+        {
+            string request = "api/personajes/deletepersonaje/"+id;
+            using(HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(this.UrlApi);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(this.header);
+
+                HttpResponseMessage response = await client.DeleteAsync(request);
+            }
         }
 
     }
